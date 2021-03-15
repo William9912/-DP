@@ -1,0 +1,49 @@
+package ojs;
+import java.util.*;
+public class LuoguP1879 {
+	public static void main(String[] args) {
+		Scanner cin = new Scanner(System.in);
+		int m;
+		int n;
+		m = cin.nextInt();
+		n = cin.nextInt();
+		
+		int[] map = new int[13];
+		for(int i=1;i<=m;++i) {
+			for(int j= 1;j<=n;++j) {
+				int temp = cin.nextInt();
+				map[i] = (map[i]<<1)+temp;
+			}
+		}
+		int max = (1<<n)-1;//所有的状态都可以用数字表示，比如两位，可以表示00，01，10，11
+		boolean[] can = new boolean[max+1];
+		for(int i=0;i<=max;++i) {
+			if((((i>>1)&i)==0)&&(((i<<1)&i)==0)) {//没有挨着的两个1
+				can[i] = true;
+			}
+		}
+		int[][] dp = new int[13][max+1];
+		//计算第一行可能的放法
+		for(int i=0;i<=max;++i) {
+			if(can[i]&&((i&map[1])==i)){//i&map[1]==i 说明的是i是1的位置map[1]不能是0，不然就会不一样
+				dp[1][i]=1;//
+			}
+		}
+		for(int i=2;i<=m;++i) {
+			for(int j=0;j<=max;++j) {
+				if(can[j]&&((j&map[i])==j)) {//可以满足基本条件
+					for(int k=0;k<=max;++k) {
+						if(can[k]&&((j&k)==0)) {
+							dp[i][j] = (dp[i][j]+dp[i-1][k])%1000000000;						}
+					}
+				}
+			}
+		}
+		long ans = 0;
+		for(int i:dp[m]) {
+			ans = (ans +i)%1000000000;
+		}
+		System.out.print(ans);
+	}
+
+}
